@@ -136,6 +136,11 @@ impl VhostUserMasterReqHandler for SlaveFsCacheReq {
     fn fs_slave_unmap(&self, fs: &VhostUserFSSlaveMsg) -> HandlerResult<u64> {
         self.send_message(SlaveReq::FS_UNMAP, fs, None)
     }
+
+    /// Forward vhost-user-fs unmap file requests to the master.
+    fn fs_slave_io(&self, fs: &VhostUserFSSlaveMsg, fd: &dyn AsRawFd) -> HandlerResult<u64> {
+        self.send_message(SlaveReq::FS_IO, fs, Some(&[fd.as_raw_fd()]))
+    }
 }
 
 #[cfg(test)]
