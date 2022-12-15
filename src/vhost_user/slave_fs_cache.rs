@@ -58,7 +58,7 @@ impl SlaveFsCacheReqInternal {
             return Err(Error::InvalidMessage);
         }
         if body.value != 0 {
-            return Err(Error::MasterInternalError);
+            return Err(Error::MasterInternalError(body.value));
         }
 
         Ok(body.value)

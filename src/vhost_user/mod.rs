@@ -78,7 +78,7 @@ pub enum Error {
     /// Failure from the slave side.
     SlaveInternalError,
     /// Failure from the master side.
-    MasterInternalError,
+    MasterInternalError(u64),
     /// Virtio/protocol features mismatch.
     FeatureMismatch,
     /// Error from request handler
@@ -105,7 +105,7 @@ impl std::fmt::Display for Error {
             Error::SocketBroken(e) => write!(f, "socket is broken: {}", e),
             Error::SocketRetry(e) => write!(f, "temporary socket error: {}", e),
             Error::SlaveInternalError => write!(f, "slave internal error"),
-            Error::MasterInternalError => write!(f, "Master internal error"),
+            Error::MasterInternalError(e) => write!(f, "Master internal error {}", e),
             Error::FeatureMismatch => write!(f, "virtio/protocol features mismatch"),
             Error::ReqHandlerError(e) => write!(f, "handler failed to handle request: {}", e),
             Error::MemFdCreateError => {
@@ -135,7 +135,7 @@ impl Error {
             // Slave internal error, hope it recovers on reconnect.
             Error::SlaveInternalError => true,
             // Master internal error, hope it recovers on reconnect.
-            Error::MasterInternalError => true,
+            Error::MasterInternalError(_) => true,
             // Should just retry the IO operation instead of rebuilding the underline connection.
             Error::SocketRetry(_) => false,
             Error::InvalidParam | Error::InvalidOperation => false,
